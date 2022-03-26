@@ -88,7 +88,7 @@ namespace _03M_SolarFarmAssessment.UI
             {
                 tempString = _UI.GetStringRecquired("Material (PolySi, MonoSi, ASi, CdTe, CIGS)");
                 
-                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))   //true ignorescase
+                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))   //true = ignorescase
                 {
                     valid = true;
                     if (int.TryParse(tempString, out int throwaway))

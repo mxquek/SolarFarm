@@ -45,15 +45,24 @@ namespace _03M_SolarFarmAssessment.DAL
         }
         public Result<SolarPanel> Add(SolarPanel record)
         {
-            record.ID = record.Section + "-" + record.Row + "-" + record.Column;
-            _SolarPanels.Add(record.ID, record);
-
             Result<SolarPanel> result = new Result<SolarPanel>();
+            record.ID = record.Section + "-" + record.Row + "-" + record.Column;
+
+            foreach (KeyValuePair<string, SolarPanel> panel in _SolarPanels)
+            {
+                if (panel.Key == record.ID)
+                {
+                    result.Success = false;
+                    result.Message = "Panel already exists! Panels must have a unique section, row, and column combination";
+                    return result;
+                }
+            }
+
+            _SolarPanels.Add(record.ID, record);
             result.Success = true;
             result.Message = "New Solar Panel Added";
             result.Data = record;
 
-            //Console.WriteLine(_SolarPanels[record.ID]);       TEST
             WriteToFile();
             return result;
         }
@@ -63,9 +72,13 @@ namespace _03M_SolarFarmAssessment.DAL
             throw new NotImplementedException();
         }
 
-        public Result<List<SolarPanel>> GetAll()
+        public Result<Dictionary<string,SolarPanel>> GetAll()
         {
-            throw new NotImplementedException();
+            Result<Dictionary<string, SolarPanel>> result = new Result<Dictionary<string, SolarPanel>>();
+            result.Success = true;
+            result.Message = "All Solar Panels retrieved.";
+            result.Data = new Dictionary<string, SolarPanel>(_SolarPanels);
+            return result;
         }
 
         public Result<SolarPanel> Remove(string key)
