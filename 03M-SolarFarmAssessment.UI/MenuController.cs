@@ -88,7 +88,7 @@ namespace _03M_SolarFarmAssessment.UI
             {
                 tempString = _UI.GetStringRecquired("Material (PolySi, MonoSi, ASi, CdTe, CIGS)");
                 
-                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))
+                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))   //true ignorescase
                 {
                     valid = true;
                     if (int.TryParse(tempString, out int throwaway))
@@ -132,6 +132,10 @@ namespace _03M_SolarFarmAssessment.UI
             if (!result.Success)
             {
                 _UI.Error(result.Message);
+            }
+            else
+            {
+                _UI.Success(result.Message);
             }
         }
         public void UpdatePanel()

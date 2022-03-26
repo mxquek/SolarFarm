@@ -10,6 +10,6 @@ namespace _03M_SolarFarmAssessment.Core.Interface
     public interface ISolarPanelFormatter
     {
         SolarPanel Deserialize(string data);
-        string Serialize(SolarPanel record);
+        string Serialize(KeyValuePair<string, SolarPanel> record);
     }
 }

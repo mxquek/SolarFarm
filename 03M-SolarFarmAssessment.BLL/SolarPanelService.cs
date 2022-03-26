@@ -33,6 +33,10 @@ namespace _03M_SolarFarmAssessment.BLL
                 result.Message = "The year cannot be in the future.";
             }
 
+            if (!result.Success)
+            {
+                return result;
+            }
             return _SolarPanelRepository.Add(panel);
         }
 

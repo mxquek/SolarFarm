@@ -15,5 +15,28 @@ namespace _03M_SolarFarmAssessment.Core.DTO
         public int YearInstalled { get; set; }
         public MaterialType Material { get; set; }
         public bool IsTracking { get; set; }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"ID: {ID}");
+            sb.AppendLine($"Section: {Section}");
+            sb.AppendLine($"Row: {Row}");
+            sb.AppendLine($"Column: {Column}");
+            sb.AppendLine($"Year Installed: {YearInstalled}");
+            sb.AppendLine($"Material Type: {Material.ToString()}");
+            if (IsTracking)
+            {
+                sb.AppendLine($"Tracking: yes");
+            }
+            else
+            {
+                sb.AppendLine($"Tracking: no");
+            }
+            
+            sb.AppendLine("---------------------");
+
+            return sb.ToString();
+        }
     }
 }
