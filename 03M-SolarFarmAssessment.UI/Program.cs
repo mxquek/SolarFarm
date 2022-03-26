@@ -1,4 +1,5 @@
-﻿using System;
+﻿using _03M_SolarFarmAssessment.BLL;
+using System;
 
 namespace _03M_SolarFarmAssessment.UI
 {
@@ -8,6 +9,7 @@ namespace _03M_SolarFarmAssessment.UI
         {
             ConsoleIO ui = new ConsoleIO();
             MenuController menu = new MenuController(ui);
+            menu.Service = SolarPanelServiceFactory.GetSolarPanelService();
             menu.Run();
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace _03M_SolarFarmAssessment.Core.Interface
 {
-    public interface ISolarSolarPanelService
+    public interface ISolarPanelService
     {
         Result<List<SolarPanel>> LoadSection(string section);     // Retrieves only SolarPanels in section
         Result<SolarPanel> Get(string key);                       // Get only the SolarPanel with the specified key

@@ -25,7 +25,7 @@ namespace _03M_SolarFarmAssessment.UI
 
 				if (!decimal.TryParse(input, out decimal temp))
 				{
-					Error("Please input a proper decimal\n");
+					Error("Please input a proper decimal");
 				}
 				else
 				{
@@ -34,6 +34,26 @@ namespace _03M_SolarFarmAssessment.UI
 				}
 			}
 			return result;
+		}
+		private string _GetString(string prompt, bool nullable)
+        {
+			bool valid = false;
+			string input = "";
+			while (!valid)
+			{
+				Console.Write($"{prompt}: ");
+				input = Console.ReadLine();
+				if (!nullable)
+				{
+					if(input == "")
+                    {
+						Error("Input cannot be empty.");
+						continue;
+					}
+				}
+				valid = true;
+			}
+			return input;
 		}
 		public int GetInt(string prompt)
 		{
@@ -79,10 +99,13 @@ namespace _03M_SolarFarmAssessment.UI
 			}
 			return result;
 		}
-		public String GetString(string prompt)
+		public String GetStringRecquired(string prompt)
 		{
-			Console.Write($"{prompt}: ");
-			return Console.ReadLine();
+			return _GetString(prompt, false);
+		}
+		public String GetStringOptional(string prompt)
+		{
+			return _GetString(prompt, true);
 		}
 		public void Display(string message)
 		{

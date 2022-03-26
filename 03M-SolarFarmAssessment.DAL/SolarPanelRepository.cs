@@ -8,7 +8,7 @@ using _03M_SolarFarmAssessment.Core.DTO;
 
 namespace _03M_SolarFarmAssessment.DAL
 {
-    class SolarPanelRepository : ISolarPanelRepository
+    public class SolarPanelRepository : ISolarPanelRepository
     {
         public Result<SolarPanel> Add(SolarPanel record)
         {

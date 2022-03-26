@@ -1,5 +1,6 @@
 ﻿using _03M_SolarFarmAssessment.BLL;
 using _03M_SolarFarmAssessment.Core.DTO;
+using _03M_SolarFarmAssessment.Core.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace _03M_SolarFarmAssessment.UI
     class MenuController
     {
         private ConsoleIO _UI;
-        private SolarPanelService _SolarPanelService;
+        public ISolarPanelService Service;
 
         public MenuController(ConsoleIO ui)
         {
@@ -20,6 +21,7 @@ namespace _03M_SolarFarmAssessment.UI
 
         public void Run()
         {
+
             _UI.Display("Welcome to Solar Farm");
 
             bool running = true;
@@ -74,20 +76,19 @@ namespace _03M_SolarFarmAssessment.UI
         public void AddPanel()
         {
             SolarPanel panel = new SolarPanel();
-            MaterialType tempMaterial = new MaterialType();
             string tempString;
             bool valid = false;
 
             _UI.Display("\nAdd a Panel\n===========\n");
-            panel.Section = _UI.GetString("Section");
+            panel.Section = _UI.GetStringRecquired("Section");
             panel.Row = _UI.GetInt("Row");
             panel.Column = _UI.GetInt("Column");
 
             while (!valid)
             {
-                tempString = _UI.GetString("Material (PolySi, MonoSi, ASi, CdTe, CIGS)");
+                tempString = _UI.GetStringRecquired("Material (PolySi, MonoSi, ASi, CdTe, CIGS)");
                 
-                if (Enum.TryParse<MaterialType>(tempString, true, out tempMaterial))
+                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))
                 {
                     valid = true;
                     if (int.TryParse(tempString, out int throwaway))
@@ -109,7 +110,7 @@ namespace _03M_SolarFarmAssessment.UI
             valid = false;
             while (!valid)
             {
-                switch (_UI.GetString("Tracked [y/n]"))
+                switch (_UI.GetStringRecquired("Tracked [y/n]").ToLower())
                 {
                     case "y":
                         panel.IsTracking = true;
@@ -120,18 +121,18 @@ namespace _03M_SolarFarmAssessment.UI
                         valid = true;
                         break;
                     default:
-                        _UI.Error("Invalid Input.");
+                        _UI.Error("Invalid Input!");
                         break;
                 }
             }
 
-            //TODO - Implement Service.add
-            //Result<Panel> result = _PanelService.Add(panel);
 
-            //if (!result.Success)
-            //{
-            //    _UI.Error(result.Message);
-            //}
+            Result<SolarPanel> result = Service.Add(panel);
+
+            if (!result.Success)
+            {
+                _UI.Error(result.Message);
+            }
         }
         public void UpdatePanel()
         {
