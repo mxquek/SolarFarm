@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>_03M_SolarFarmAssessment.BLL</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\03M-SolarFarmAssessment.Core\03M-SolarFarmAssessment.Core.csproj" />
+    <ProjectReference Include="..\03M-SolarFarmAssessment.DAL\03M-SolarFarmAssessment.DAL.csproj" />
+  </ItemGroup>
+
+</Project>
