@@ -145,7 +145,22 @@ namespace _03M_SolarFarmAssessment.UI
         public void RemovePanel()
         {
             _UI.Display("\nRemove a Panel\n==============\n");
+            string section = _UI.GetStringRecquired("Section");
+            int row = _UI.GetInt("Row");
+            int column = _UI.GetInt("Column");
 
+            Result<SolarPanel> result = Service.Get($"{section}-{row}-{column}");
+
+            if (!result.Success)
+            {
+                _UI.Error(result.Message);
+                return;
+            }
+            else
+            {
+                result = Service.Remove(result.Data.ID);
+                _UI.Success(result.Message);
+            }
         }
 
     }

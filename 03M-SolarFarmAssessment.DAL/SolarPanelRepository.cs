@@ -83,7 +83,12 @@ namespace _03M_SolarFarmAssessment.DAL
 
         public Result<SolarPanel> Remove(string key)
         {
-            throw new NotImplementedException();
+            Result<SolarPanel> result = new Result<SolarPanel>();
+            _SolarPanels.Remove(key);
+            result.Success = true;
+            result.Message = $"Solar Panel ({key}) was removed.";
+            WriteToFile();
+            return result;
         }
 
         public void WriteToFile()

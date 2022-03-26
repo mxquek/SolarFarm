@@ -72,7 +72,7 @@ namespace _03M_SolarFarmAssessment.BLL
 
         public Result<SolarPanel> Remove(string key)
         {
-            throw new NotImplementedException();
+            return _SolarPanelRepository.Remove(key);
         }
     }
 }
