@@ -53,7 +53,7 @@ namespace _03M_SolarFarmAssessment.DAL
             result.Message = "New Solar Panel Added";
             result.Data = record;
 
-            Console.WriteLine(_SolarPanels[record.ID]);
+            //Console.WriteLine(_SolarPanels[record.ID]);       TEST
             WriteToFile();
             return result;
         }
