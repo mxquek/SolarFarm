@@ -25,7 +25,7 @@ namespace _03M_SolarFarmAssessment.UI
 
 				if (!int.TryParse(input, out int temp))
 				{
-					Error("Please input a proper decimal");
+					Error("Please input a proper integer");
 				}
 				else
 				{

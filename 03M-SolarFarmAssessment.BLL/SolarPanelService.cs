@@ -67,7 +67,23 @@ namespace _03M_SolarFarmAssessment.BLL
 
         public Result<List<SolarPanel>> LoadSection(string section)
         {
-            throw new NotImplementedException();
+            Result<List<SolarPanel>> result = new Result<List<SolarPanel>>();
+            result.Data = new List<SolarPanel>();
+            Dictionary<string, SolarPanel> solarPanels = _SolarPanelRepository.GetAll().Data;
+            result.Success = false;
+            result.Message = $"No solar panels in {section} were found.";
+
+            foreach (KeyValuePair<string, SolarPanel> panel in solarPanels)
+            {
+                if (panel.Value.Section == section)
+                {
+                    result.Success = true;
+                    result.Message = $"Solar Panel in {section} was found.";
+                    result.Data.Add(panel.Value);
+                }
+            }
+
+            return result;
         }
 
         public Result<SolarPanel> Remove(string key)

@@ -65,13 +65,28 @@ namespace _03M_SolarFarmAssessment.UI
 
         public int GetMenuChoice()
         {
+            _UI.Display("");
             DisplayMenu();
             return _UI.GetIntRecquired("Select [0-4]");
         }
-
         public void FindPanelsBySection()
         {
             _UI.Display("\nFind Panels by Section\n======================\n");
+            string section = _UI.GetStringRecquired("Section Name");
+            Result<List<SolarPanel>> result = Service.LoadSection(section);
+            if (result.Success)
+            {
+                _UI.Display($"\nPanels in {section}");
+                _UI.Display($"Row Col Year Material Tracking");
+                for (int index = 0; index < result.Data.Count; index++)
+                {
+                    _UI.Display($"{result.Data[index].Row,3} {result.Data[index].Column,3} {result.Data[index].YearInstalled,4} {result.Data[index].Material,8} {result.Data[index].IsTrackingAsString,8}");
+                }
+            }
+            else
+            {
+                _UI.Error(result.Message);
+            }
         }
         public void AddPanel()
         {
@@ -146,14 +161,16 @@ namespace _03M_SolarFarmAssessment.UI
             int column = _UI.GetIntRecquired("Column");
 
             Result<SolarPanel> result = Service.Get($"{section}-{row}-{column}");
-            SolarPanel input = new SolarPanel();
-            string targetKey = result.Data.ID;
-
             if (!result.Success)
             {
                 _UI.Error(result.Message);
                 return;
             }
+
+            SolarPanel input = new SolarPanel();
+            string targetKey = result.Data.ID;
+            _UI.Display($"\nEditing {section}-{row}-{column}");
+            _UI.Display($"Press [Enter] to keep original value.\n");
 
             input.Section = _UI.GetStringOptional($"Section ({result.Data.Section})");
             input.Row = _UI.GetIntOptional($"Row ({result.Data.Row})");

@@ -10,7 +10,7 @@ namespace _03M_SolarFarmAssessment.Core.DTO
     {
         PolySi,     //MulticrystallineSilicon,
         MonoSi,     //MonocrystallineSilicon,
-        Asi,        //AmorphousSilicon,
+        ASi,        //AmorphousSilicon,
         CdTe,       //CadmiumTelluride,
         CIGS        //CopperIndiumGalliumSelenide
     }
