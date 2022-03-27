@@ -40,9 +40,9 @@ namespace _03M_SolarFarmAssessment.BLL
             return _SolarPanelRepository.Add(panel);
         }
 
-        public Result<SolarPanel> Edit(SolarPanel panel)
+        public Result<SolarPanel> Edit(string targetKey, SolarPanel panel)
         {
-            throw new NotImplementedException();
+            return _SolarPanelRepository.Edit(targetKey,panel);
         }
 
         public Result<SolarPanel> Get(string key)

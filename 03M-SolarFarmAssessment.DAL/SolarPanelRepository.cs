@@ -18,10 +18,11 @@ namespace _03M_SolarFarmAssessment.DAL
             _SolarPanels = new Dictionary<string, SolarPanel>();
             _path = @"C:\Users\Mabel\training\03M-SolarFarmAssessmentData\solarFarm.csv";
             SolarPanelCSVFormatter csv = new SolarPanelCSVFormatter();
-            //Console.WriteLine(_path);     //testing
+
             if (!File.Exists(_path))
             {
-                using(FileStream fs = File.Create(_path)) { }
+                //referenced stack overflow
+                using (FileStream fs = File.Create(_path)) { }
             }
 
             else
@@ -67,9 +68,50 @@ namespace _03M_SolarFarmAssessment.DAL
             return result;
         }
 
-        public Result<SolarPanel> Edit(SolarPanel record)
+        public Result<SolarPanel> Edit(string targetKey, SolarPanel input)
         {
-            throw new NotImplementedException();
+            Result<SolarPanel> result = new Result<SolarPanel>();
+            if(input.Section == "")
+            {
+                input.Section = _SolarPanels[targetKey].Section;
+            }
+            if (input.Row == null)
+            {
+                input.Row = _SolarPanels[targetKey].Row;
+            }
+            if (input.Column == null)
+            {
+                input.Column = _SolarPanels[targetKey].Column;
+            }
+            if (input.YearInstalled == null)
+            {
+                input.YearInstalled = _SolarPanels[targetKey].YearInstalled;
+            }
+            input.ID = input.Section + "-" + input.Row + "-" + input.Column;
+
+            if (input.ID != targetKey)
+            {
+                Remove(targetKey);
+                result = Add(input);
+                if (!result.Success)
+                {
+                    return result;
+                }
+                else
+                {
+                    result.Message = $"{targetKey} has been changed to {input.ID} with updated information";
+                }
+            }
+            else
+            {
+                _SolarPanels[targetKey].Material = input.Material;
+                _SolarPanels[targetKey].YearInstalled = input.YearInstalled;
+                _SolarPanels[targetKey].IsTracking = input.IsTracking;
+                result.Message = $"{targetKey} has been updated";
+            }
+            result.Success = true;
+            WriteToFile();
+            return result;
         }
 
         public Result<Dictionary<string,SolarPanel>> GetAll()

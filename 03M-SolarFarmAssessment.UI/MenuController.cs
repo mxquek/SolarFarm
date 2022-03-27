@@ -66,7 +66,7 @@ namespace _03M_SolarFarmAssessment.UI
         public int GetMenuChoice()
         {
             DisplayMenu();
-            return _UI.GetInt("Select [0-4]");
+            return _UI.GetIntRecquired("Select [0-4]");
         }
 
         public void FindPanelsBySection()
@@ -81,10 +81,10 @@ namespace _03M_SolarFarmAssessment.UI
 
             _UI.Display("\nAdd a Panel\n===========\n");
             panel.Section = _UI.GetStringRecquired("Section");
-            panel.Row = _UI.GetInt("Row");
-            panel.Column = _UI.GetInt("Column");
+            panel.Row = _UI.GetIntRecquired("Row");
+            panel.Column = _UI.GetIntRecquired("Column");
 
-            while (!valid)
+            while (!valid) //maybe turn into mthod
             {
                 tempString = _UI.GetStringRecquired("Material (PolySi, MonoSi, ASi, CdTe, CIGS)");
                 
@@ -105,7 +105,7 @@ namespace _03M_SolarFarmAssessment.UI
 
             }
 
-            panel.YearInstalled = _UI.GetInt("Installation Year");
+            panel.YearInstalled = _UI.GetIntRecquired("Installation Year");
 
             valid = false;
             while (!valid)
@@ -141,13 +141,94 @@ namespace _03M_SolarFarmAssessment.UI
         public void UpdatePanel()
         {
             _UI.Display("\nUpdate a Panel\n==============\n");
+            string section = _UI.GetStringRecquired("Section");
+            int row = _UI.GetIntRecquired("Row");
+            int column = _UI.GetIntRecquired("Column");
+
+            Result<SolarPanel> result = Service.Get($"{section}-{row}-{column}");
+            SolarPanel input = new SolarPanel();
+            string targetKey = result.Data.ID;
+
+            if (!result.Success)
+            {
+                _UI.Error(result.Message);
+                return;
+            }
+
+            input.Section = _UI.GetStringOptional($"Section ({result.Data.Section})");
+            input.Row = _UI.GetIntOptional($"Row ({result.Data.Row})");
+            input.Column = _UI.GetIntOptional($"Column ({result.Data.Column})");
+
+            string tempString;      //maybe turn into mthod
+            bool valid = false;     //
+            while (!valid) 
+            {
+                tempString = _UI.GetStringOptional($"Material (PolySi, MonoSi, ASi, CdTe, CIGS) ({result.Data.Material})");
+
+                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))   //true = ignorescase
+                {
+                    valid = true;
+                    if (int.TryParse(tempString, out int throwaway))
+                    {
+                        valid = false;
+                    }
+                    else
+                    {
+                        input.Material = tempMaterial;              //new line
+                        continue;
+                    }
+                }
+                if(tempString == "")    //this is different than the add validation
+                {
+                    valid = true;
+                    input.Material = result.Data.Material;          //new line
+                    continue;
+                }
+
+                _UI.Error("Invalid Material Type!");
+
+            }       //
+            input.YearInstalled = _UI.GetIntOptional($"Year Installed ({result.Data.YearInstalled})");
+
+            valid = false;
+            while (!valid)
+            {
+                switch (_UI.GetStringOptional($"Tracked [y/n] ({result.Data.IsTrackingAsString})").ToLower())
+                {
+                    case "y":
+                        input.IsTracking = true;
+                        valid = true;
+                        break;
+                    case "n":
+                        input.IsTracking = false;
+                        valid = true;
+                        break;
+                    case "":
+                        input.IsTracking = result.Data.IsTracking;
+                        valid = true;
+                        break;
+                    default:
+                        _UI.Error("Invalid Input!");
+                        break;
+                }
+            }
+
+            result = Service.Edit(targetKey,input);
+            if (!result.Success)
+            {
+                _UI.Error(result.Message);
+            }
+            else
+            {
+                _UI.Success(result.Message);
+            }
         }
         public void RemovePanel()
         {
             _UI.Display("\nRemove a Panel\n==============\n");
             string section = _UI.GetStringRecquired("Section");
-            int row = _UI.GetInt("Row");
-            int column = _UI.GetInt("Column");
+            int row = _UI.GetIntRecquired("Row");
+            int column = _UI.GetIntRecquired("Column");
 
             Result<SolarPanel> result = Service.Get($"{section}-{row}-{column}");
 
