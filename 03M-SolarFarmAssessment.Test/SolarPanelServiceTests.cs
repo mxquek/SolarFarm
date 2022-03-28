@@ -3,6 +3,7 @@ using _03M_SolarFarmAssessment.BLL;
 using NUnit.Framework;
 using _03M_SolarFarmAssessment.Core.Interface;
 using System;
+using System.Collections.Generic;
 
 namespace _03M_SolarFarmAssessment.Test
 {
@@ -10,20 +11,33 @@ namespace _03M_SolarFarmAssessment.Test
     {
         SolarPanel invalidTestPanel,testPanel;
         ISolarPanelService testService;
+        List<SolarPanel> solarPanels;
         [SetUp]
         public void Setup()
         {
             invalidTestPanel = new SolarPanel();
             testPanel = new SolarPanel();
+            solarPanels = new List<SolarPanel>();
             testService = SolarPanelServiceFactory.GetSolarPanelService();
+            int row = 55, column = 66, material = 0, yearInstalled = 2000;
 
-            testPanel.Section = "Main";
-            testPanel.Row = 55;
-            testPanel.Column = 66;
-            testPanel.Material = Enum.Parse<MaterialType>("CdTe");
-            testPanel.YearInstalled = 2022;
-            testPanel.IsTracking = true;
-            testService.Add(testPanel);
+            for (int index = 0; index < 5; index++)
+            {
+                testPanel = new SolarPanel();
+                testPanel.Section = "SPTest";
+                testPanel.Row = row;
+                testPanel.Column = column;
+                testPanel.Material = (MaterialType)material;
+                testPanel.YearInstalled = yearInstalled;
+                testPanel.IsTracking = true;
+                solarPanels.Add(testPanel);
+                testService.Add(testPanel);
+
+                row += 1;
+                column += 1;
+                material += 1;
+                yearInstalled += 1;
+            } 
         }
 
         [Test]
@@ -78,7 +92,7 @@ namespace _03M_SolarFarmAssessment.Test
         [Test]
         public void TestGetInvalidKey()
         {
-            string key = "Main-22-11";
+            string key = "SPTest-100-100";
             Result<SolarPanel> result = testService.Get(key);
 
             bool actual = result.Success;
@@ -89,10 +103,44 @@ namespace _03M_SolarFarmAssessment.Test
         public void TestGetValidKey()
         {
             testService.Add(testPanel);
-            string key = "Main-55-66";
+            string key = "SPTest-55-66";
             Result<SolarPanel> result = testService.Get(key);
 
             bool actual = result.Success;
+            bool expected = true;
+
+            Assert.AreEqual(expected, actual);
+        }
+        [Test]
+        public void TestLoadInvalidSection()
+        {
+            Result<List<SolarPanel>> result = testService.LoadSection("Random1234");
+            List<SolarPanel> actual = result.Data;
+            List<SolarPanel> expected = new List<SolarPanel>();
+
+            Assert.AreEqual(expected, actual);
+        }
+        [Test]
+        public void TestLoadValidSection()
+        {
+            Result<List<SolarPanel>> result = testService.LoadSection(testPanel.Section);
+
+            List<SolarPanel> actualList = result.Data;
+            List<SolarPanel> expectedList = solarPanels;
+            bool actual = false;
+
+            for (int index = 0; index < actualList.Count; index++)
+            {
+                if(actualList[index].ID == expectedList[index].ID)
+                {
+                    actual = true;
+                }
+                else
+                {
+                    actual = false;
+                }
+            }
+
             bool expected = true;
 
             Assert.AreEqual(expected, actual);
