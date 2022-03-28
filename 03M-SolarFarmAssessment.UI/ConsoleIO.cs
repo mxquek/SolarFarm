@@ -82,7 +82,7 @@ namespace _03M_SolarFarmAssessment.UI
 			}
 			return input;
 		}
-		public int GetIntRecquired(string prompt)
+		public int GetIntRequired(string prompt)
 		{
 			return _GetInt(prompt, false).Value;
 		}
@@ -116,7 +116,7 @@ namespace _03M_SolarFarmAssessment.UI
 			}
 			return result;
 		}
-		public String GetStringRecquired(string prompt)
+		public String GetStringRequired(string prompt)
 		{
 			return _GetString(prompt, false);
 		}

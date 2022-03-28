@@ -67,12 +67,12 @@ namespace _03M_SolarFarmAssessment.UI
         {
             _UI.Display("");
             DisplayMenu();
-            return _UI.GetIntRecquired("Select [0-4]");
+            return _UI.GetIntRequired("Select [0-4]");
         }
         public void FindPanelsBySection()
         {
             _UI.Display("\nFind Panels by Section\n======================\n");
-            string section = _UI.GetStringRecquired("Section Name");
+            string section = _UI.GetStringRequired("Section Name");
             Result<List<SolarPanel>> result = Service.LoadSection(section);
             if (result.Success)
             {
@@ -91,62 +91,21 @@ namespace _03M_SolarFarmAssessment.UI
         public void AddPanel()
         {
             SolarPanel panel = new SolarPanel();
-            string tempString;
-            bool valid = false;
 
             _UI.Display("\nAdd a Panel\n===========\n");
-            panel.Section = _UI.GetStringRecquired("Section");
-            panel.Row = _UI.GetIntRecquired("Row");
-            panel.Column = _UI.GetIntRecquired("Column");
-
-            while (!valid) //maybe turn into mthod
-            {
-                tempString = _UI.GetStringRecquired("Material (PolySi, MonoSi, ASi, CdTe, CIGS)");
-                
-                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))   //true = ignorescase
-                {
-                    valid = true;
-                    if (int.TryParse(tempString, out int throwaway))
-                    {
-                        valid = false;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-
-                _UI.Error("Invalid Material Type!");
-
-            }
-
-            panel.YearInstalled = _UI.GetIntRecquired("Installation Year");
-
-            valid = false;
-            while (!valid)
-            {
-                switch (_UI.GetStringRecquired("Tracked [y/n]").ToLower())
-                {
-                    case "y":
-                        panel.IsTracking = true;
-                        valid = true;
-                        break;
-                    case "n":
-                        panel.IsTracking = false;
-                        valid = true;
-                        break;
-                    default:
-                        _UI.Error("Invalid Input!");
-                        break;
-                }
-            }
-
+            panel.Section = _UI.GetStringRequired("Section");
+            panel.Row = _UI.GetIntRequired("Row");
+            panel.Column = _UI.GetIntRequired("Column");
+            panel.Material = GetMaterialTypeRequired();
+            panel.YearInstalled = _UI.GetIntRequired("Installation Year");
+            panel.IsTracking = GetIsTrackingRequired();
 
             Result<SolarPanel> result = Service.Add(panel);
 
             if (!result.Success)
             {
                 _UI.Error(result.Message);
+                _UI.Error("Panel was not added.");
             }
             else
             {
@@ -155,85 +114,37 @@ namespace _03M_SolarFarmAssessment.UI
         }
         public void UpdatePanel()
         {
+            SolarPanel input = new SolarPanel();
             _UI.Display("\nUpdate a Panel\n==============\n");
-            string section = _UI.GetStringRecquired("Section");
-            int row = _UI.GetIntRecquired("Row");
-            int column = _UI.GetIntRecquired("Column");
+            input.Section = _UI.GetStringRequired("Section");
+            input.Row = _UI.GetIntRequired("Row");
+            input.Column = _UI.GetIntRequired("Column");
 
-            Result<SolarPanel> result = Service.Get($"{section}-{row}-{column}");
+            Result<SolarPanel> result = Service.Get($"{input.Section}-{input.Row}-{input.Column}");
             if (!result.Success)
             {
                 _UI.Error(result.Message);
                 return;
             }
 
-            SolarPanel input = new SolarPanel();
+            
             string targetKey = result.Data.ID;
-            _UI.Display($"\nEditing {section}-{row}-{column}");
+            _UI.Display($"\nEditing {input.Section}-{input.Row}-{input.Column}");
             _UI.Display($"Press [Enter] to keep original value.\n");
 
             input.Section = _UI.GetStringOptional($"Section ({result.Data.Section})");
             input.Row = _UI.GetIntOptional($"Row ({result.Data.Row})");
             input.Column = _UI.GetIntOptional($"Column ({result.Data.Column})");
-
-            string tempString;      //maybe turn into mthod
-            bool valid = false;     //
-            while (!valid) 
-            {
-                tempString = _UI.GetStringOptional($"Material (PolySi, MonoSi, ASi, CdTe, CIGS) ({result.Data.Material})");
-
-                if (Enum.TryParse<MaterialType>(tempString, true, out MaterialType tempMaterial))   //true = ignorescase
-                {
-                    valid = true;
-                    if (int.TryParse(tempString, out int throwaway))
-                    {
-                        valid = false;
-                    }
-                    else
-                    {
-                        input.Material = tempMaterial;              //new line
-                        continue;
-                    }
-                }
-                if(tempString == "")    //this is different than the add validation
-                {
-                    valid = true;
-                    input.Material = result.Data.Material;          //new line
-                    continue;
-                }
-
-                _UI.Error("Invalid Material Type!");
-
-            }       //
+            input.Material = GetMaterialTypeOptional(result.Data.Material);
             input.YearInstalled = _UI.GetIntOptional($"Year Installed ({result.Data.YearInstalled})");
-
-            valid = false;
-            while (!valid)
-            {
-                switch (_UI.GetStringOptional($"Tracked [y/n] ({result.Data.IsTrackingAsString})").ToLower())
-                {
-                    case "y":
-                        input.IsTracking = true;
-                        valid = true;
-                        break;
-                    case "n":
-                        input.IsTracking = false;
-                        valid = true;
-                        break;
-                    case "":
-                        input.IsTracking = result.Data.IsTracking;
-                        valid = true;
-                        break;
-                    default:
-                        _UI.Error("Invalid Input!");
-                        break;
-                }
-            }
+            input.IsTracking = GetIsTrackingOptional(result.Data.IsTracking, result.Data.IsTrackingAsString);
 
             result = Service.Edit(targetKey,input);
+
             if (!result.Success)
             {
                 _UI.Error(result.Message);
+                _UI.Error("Panel was not updated");
             }
             else
             {
@@ -243,9 +154,9 @@ namespace _03M_SolarFarmAssessment.UI
         public void RemovePanel()
         {
             _UI.Display("\nRemove a Panel\n==============\n");
-            string section = _UI.GetStringRecquired("Section");
-            int row = _UI.GetIntRecquired("Row");
-            int column = _UI.GetIntRecquired("Column");
+            string section = _UI.GetStringRequired("Section");
+            int row = _UI.GetIntRequired("Row");
+            int column = _UI.GetIntRequired("Column");
 
             Result<SolarPanel> result = Service.Get($"{section}-{row}-{column}");
 
@@ -261,5 +172,112 @@ namespace _03M_SolarFarmAssessment.UI
             }
         }
 
+        private MaterialType? GetMaterialType(bool nullable, string? previousMaterialAsString)
+        {
+            bool valid = false;
+            string input;
+            MaterialType material = new MaterialType();
+            while (!valid)
+            {
+                if(nullable == true)
+                {
+                    input = _UI.GetStringOptional($"Material ({previousMaterialAsString}) [PolySi, MonoSi, ASi, CdTe, CIGS]");
+                    if (input == "")
+                    {
+                        valid = true;
+                        return null;
+                    }
+                }
+                else
+                {
+                    input = _UI.GetStringOptional($"Material [PolySi, MonoSi, ASi, CdTe, CIGS]");
+                }
+                
+                if (Enum.TryParse<MaterialType>(input, true, out material))   //true = ignorescase
+                {
+                    if (int.TryParse(input, out int throwaway))
+                    {
+                        valid = false;
+                        _UI.Error("Invalid Material Type!");
+                    }
+                    else
+                    {
+                        valid = true;
+                    }
+                }
+                else
+                {
+                    _UI.Error("Invalid Material Type!");
+                }
+                
+            }
+            return material;
+        }
+        public MaterialType GetMaterialTypeRequired()
+        {
+            return (MaterialType)GetMaterialType(false,null);
+        }
+        public MaterialType GetMaterialTypeOptional(MaterialType previousMaterial)
+        {
+            MaterialType? result = GetMaterialType(true,previousMaterial.ToString());
+            if (result == null)
+            {
+                result = previousMaterial;
+            }
+            return (MaterialType)result;
+        }
+
+        private bool? GetIsTracking(bool nullable, string? previousIsTrackingAsString)
+        {
+            bool valid = false;
+            bool? result = null;
+            string input;
+            while (!valid)
+            {
+                if (nullable == true)
+                {
+                    input = _UI.GetStringOptional($"Tracked ({previousIsTrackingAsString}) [y/n]").ToLower();
+                    if (input == "")
+                    {
+                        valid = true;
+                        result = null;
+                    }
+                }
+                else
+                {
+                    input = _UI.GetStringOptional($"Tracked [y/n]").ToLower();
+                }
+                
+                if (input == "y")
+                {
+                    valid = true;
+                    result = true;
+                }
+                else if(input == "n")
+                {
+                    valid = true;
+                    result = false;
+                }
+                else
+                {
+                    _UI.Error("Invalid Input!");
+                }
+            }
+            return result;
+        }
+        public bool GetIsTrackingRequired()
+        {
+            return (bool)GetIsTracking(false,null);
+        }
+
+        public bool GetIsTrackingOptional(bool previousIsTracking, string previousIsTrackingAsString)
+        {
+            bool? result = GetIsTracking(true, previousIsTrackingAsString);
+            if(result == null)
+            {
+                result = previousIsTracking;
+            }
+            return (bool)result;
+        }
     }
 }

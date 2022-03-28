@@ -54,7 +54,7 @@ namespace _03M_SolarFarmAssessment.DAL
                 if (panel.Key == record.ID)
                 {
                     result.Success = false;
-                    result.Message = "Panel already exists! Panels must have a unique section, row, and column combination";
+                    result.Message = "Panel already exists! Panels must have a unique section, row, and column combination.";
                     return result;
                 }
             }
