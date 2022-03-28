@@ -121,7 +121,7 @@ namespace _03M_SolarFarmAssessment.Test
             Assert.AreEqual(expected, actual);
         }
         [Test]
-        public void TestLoadValidSection()
+        public void TestLoadValidSection()  //Does not funtion properly with TestEditChangeID
         {
             Result<List<SolarPanel>> result = testService.LoadSection(testPanel.Section);
 

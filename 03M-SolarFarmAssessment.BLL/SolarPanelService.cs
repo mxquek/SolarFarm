@@ -70,6 +70,7 @@ namespace _03M_SolarFarmAssessment.BLL
             Result<List<SolarPanel>> result = new Result<List<SolarPanel>>();
             result.Data = new List<SolarPanel>();
             Dictionary<string, SolarPanel> solarPanels = _SolarPanelRepository.GetAll().Data;
+            
             result.Success = false;
             result.Message = $"No solar panels in {section} were found.";
 

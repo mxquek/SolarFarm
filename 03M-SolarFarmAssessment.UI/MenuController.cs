@@ -12,6 +12,85 @@ namespace _03M_SolarFarmAssessment.UI
     class MenuController
     {
         private ConsoleIO _UI;
+        private MaterialType? GetMaterialType(bool nullable, string? previousMaterialAsString)
+        {
+            bool valid = false;
+            string input;
+            MaterialType material = new MaterialType();
+            while (!valid)
+            {
+                if (nullable == true)
+                {
+                    input = _UI.GetStringOptional($"Material ({previousMaterialAsString}) [PolySi, MonoSi, ASi, CdTe, CIGS]");
+                    if (input == "")
+                    {
+                        valid = true;
+                        return null;
+                    }
+                }
+                else
+                {
+                    input = _UI.GetStringOptional($"Material [PolySi, MonoSi, ASi, CdTe, CIGS]");
+                }
+
+                if (Enum.TryParse<MaterialType>(input, true, out material))   //true = ignorescase
+                {
+                    if (int.TryParse(input, out int throwaway))
+                    {
+                        valid = false;
+                        _UI.Error("Invalid Material Type!");
+                    }
+                    else
+                    {
+                        valid = true;
+                    }
+                }
+                else
+                {
+                    _UI.Error("Invalid Material Type!");
+                }
+
+            }
+            return material;
+        }
+        private bool? GetIsTracking(bool nullable, string? previousIsTrackingAsString)
+        {
+            bool valid = false;
+            bool? result = null;
+            string input;
+            while (!valid)
+            {
+                if (nullable == true)
+                {
+                    input = _UI.GetStringOptional($"Tracked ({previousIsTrackingAsString}) [y/n]").ToLower();
+                    if (input == "")
+                    {
+                        valid = true;
+                        result = null;
+                    }
+                }
+                else
+                {
+                    input = _UI.GetStringOptional($"Tracked [y/n]").ToLower();
+                }
+
+                if (input == "y")
+                {
+                    valid = true;
+                    result = true;
+                }
+                else if (input == "n")
+                {
+                    valid = true;
+                    result = false;
+                }
+                else
+                {
+                    _UI.Error("Invalid Input!");
+                }
+            }
+            return result;
+        }
         public ISolarPanelService Service;
 
         public MenuController(ConsoleIO ui)
@@ -171,48 +250,7 @@ namespace _03M_SolarFarmAssessment.UI
                 _UI.Success(result.Message);
             }
         }
-
-        private MaterialType? GetMaterialType(bool nullable, string? previousMaterialAsString)
-        {
-            bool valid = false;
-            string input;
-            MaterialType material = new MaterialType();
-            while (!valid)
-            {
-                if(nullable == true)
-                {
-                    input = _UI.GetStringOptional($"Material ({previousMaterialAsString}) [PolySi, MonoSi, ASi, CdTe, CIGS]");
-                    if (input == "")
-                    {
-                        valid = true;
-                        return null;
-                    }
-                }
-                else
-                {
-                    input = _UI.GetStringOptional($"Material [PolySi, MonoSi, ASi, CdTe, CIGS]");
-                }
-                
-                if (Enum.TryParse<MaterialType>(input, true, out material))   //true = ignorescase
-                {
-                    if (int.TryParse(input, out int throwaway))
-                    {
-                        valid = false;
-                        _UI.Error("Invalid Material Type!");
-                    }
-                    else
-                    {
-                        valid = true;
-                    }
-                }
-                else
-                {
-                    _UI.Error("Invalid Material Type!");
-                }
-                
-            }
-            return material;
-        }
+        
         public MaterialType GetMaterialTypeRequired()
         {
             return (MaterialType)GetMaterialType(false,null);
@@ -226,50 +264,11 @@ namespace _03M_SolarFarmAssessment.UI
             }
             return (MaterialType)result;
         }
-
-        private bool? GetIsTracking(bool nullable, string? previousIsTrackingAsString)
-        {
-            bool valid = false;
-            bool? result = null;
-            string input;
-            while (!valid)
-            {
-                if (nullable == true)
-                {
-                    input = _UI.GetStringOptional($"Tracked ({previousIsTrackingAsString}) [y/n]").ToLower();
-                    if (input == "")
-                    {
-                        valid = true;
-                        result = null;
-                    }
-                }
-                else
-                {
-                    input = _UI.GetStringOptional($"Tracked [y/n]").ToLower();
-                }
-                
-                if (input == "y")
-                {
-                    valid = true;
-                    result = true;
-                }
-                else if(input == "n")
-                {
-                    valid = true;
-                    result = false;
-                }
-                else
-                {
-                    _UI.Error("Invalid Input!");
-                }
-            }
-            return result;
-        }
+        
         public bool GetIsTrackingRequired()
         {
             return (bool)GetIsTracking(false,null);
         }
-
         public bool GetIsTrackingOptional(bool previousIsTracking, string previousIsTrackingAsString)
         {
             bool? result = GetIsTracking(true, previousIsTrackingAsString);

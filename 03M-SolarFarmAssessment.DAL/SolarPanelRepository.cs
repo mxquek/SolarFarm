@@ -108,6 +108,7 @@ namespace _03M_SolarFarmAssessment.DAL
                 _SolarPanels[targetKey].YearInstalled = input.YearInstalled;
                 _SolarPanels[targetKey].IsTracking = input.IsTracking;
                 result.Message = $"{targetKey} has been updated";
+                result.Data = _SolarPanels[targetKey];
             }
             result.Success = true;
             WriteToFile();
